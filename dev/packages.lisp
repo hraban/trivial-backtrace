@@ -3,5 +3,7 @@
 (defpackage #:trivial-backtrace
   (:use #:common-lisp)
   (:export #:print-backtrace
-	   #:print-backtrace-to-stream))
+	   #:print-backtrace-to-stream
+	   #:print-condition
+	   #:*date-time-format*))
 

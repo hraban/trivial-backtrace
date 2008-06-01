@@ -22,24 +22,51 @@
 
 ### What it is
 
+On of the many things that didn't quite get into the Common
+Lisp standard was how to get a Lisp to output its call stack
+when something has gone wrong. As such, each Lisp has
+developed its own notion of what to display, how to display
+it, and what sort of arguments can be used to customize it.
+`trivial-backtrace` is a simple solution to generating a
+backtrace portably. As of {today}, it supports Allegro Common
+Lisp, LispWorkds, ECL, MCL, SCL, SBCL and CMUCL. Its
+interface consists of three functions and one variable:
+
+    * print-backtrace
+	* print-backtrace-to-stream
+	* print-condition
+	* \*date-time-format\*
+
+You can probably already guess what they do, but they are
+described in more detail below.
 
 {anchor mailing-lists}
 
 ### Mailing Lists
 
-  * [xxxx-devel][devel-list]: A list for announcements, questions, patches, bug reports, and so on; It's for everything
+  * [trivial-backtrace-devel][devel-list]: A list for
+    announcements, questions, patches, bug reports, and so
+    on; It's for anything and everything
+
+### API
+
+{set-property docs-package trivial-backtrace}
+{docs print-backtrace}
+{docs print-backtrace-to-stream}
+{docs print-condition}
+{docs *date-time-format*}
 
 {anchor downloads}
 
 ### Where is it
 
-A [Darcs][16] repository is available. The commands are listed below:
-    
-   [16]: http://www.darcs.net/
+A [darcs][] repository is available. The commands to get it are
+listed below:
 
-    darcs get http://common-lisp.net/project/xxxx/
+    darcs get http://common-lisp.net/project/trivial-backtrace/
 
-xxxx is also [ASDF installable][]. Its CLiki home is right [where][cliki-home] you'd expect.
+trivial-backtrace is also [ASDF installable][]. Its CLiki
+home is right [where][cliki-home] you'd expect.
 
 There's also a handy [gzipped tar file][tarball].
 
@@ -48,6 +75,11 @@ There's also a handy [gzipped tar file][tarball].
 
 ### What is happening
 
+<dl>
+<dt>1 June 2008</dt>
+<dd>Release version 1.0
+    </dd>
+    </dl>
 </div>
 </div>
 

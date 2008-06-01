@@ -1,7 +1,7 @@
-(defpackage #:asdf-lift-test (:use #:asdf #:cl))
-(in-package #:asdf-lift-test)
+(defpackage #:trivial-backtrace-test-system (:use #:asdf #:cl))
+(in-package #:trivial-backtrace-test-system)
 
-(defsystem lift-test
+(defsystem trivial-backtrace-test
   :author "Gary Warren King <gwking@metabang.com>"
   :maintainer "Gary Warren King <gwking@metabang.com>"
   :licence "MIT Style License; see file COPYING for details"

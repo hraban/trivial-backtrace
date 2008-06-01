@@ -1,115 +1,104 @@
 (in-package #:trivial-backtrace)
 
-(setf (documentation 'print-backtrace-to-stream 'function)
-  "Send a backtrace of the current error to stream. 
-
-Stream is assumed to be an open writable file stream or a
-string-output-stream. Note that `print-backtrace-to-stream`
-will print a backtrace for whatever the Lisp deems to be the 
-*current* error.
-")
-
-(defun print-backtrace (error &key (output nil) (if-exists :append)
-			(verbose nil))
-  "Send a backtrace for the error `error` to `output`. 
-
-The keywords arguments are:
-
- * :output - where to send the output. This can be:
-
-     * a string (which is assumed to designate a pathname)
-     * an open stream
-     * nil to indicate that the backtrace information should be 
-       returned as a string
-
- * if-exists - what to do if output designates a pathname and 
-   the pathname already exists. Defaults to :append.
-
- * verbose - if true, then a message about the backtrace is sent
-   to \\*terminal-io\\*. Defaults to `nil`.
-
-If the `output` is nil, the returns the backtrace output as a
-string. Otherwise, returns nil.
-"
-  (when verbose
-    (format
-     *terminal-io*
-     "~@<An unhandled error condition has been signalled:~3I ~a~I~:@>~%~%"
-     error))
-  (multiple-value-bind (output close?)
-      (typecase output
-	(null (values (make-string-output-stream) nil))
-	(string (values (open output :if-exists if-exists
-			      :if-does-not-exist :create
-			      :direction :output) t))
-	(stream (values output nil)))
-    (unwind-protect
-	 (progn
-	   (print-backtrace-to-stream output)
-	   (when (typep output 'string-stream)
-	     (get-output-stream-string output)))
-	 ;; cleanup
-	 (when close?
-	   (close output)))))
-
-#+mcl
-(defun print-backtrace-to-stream (stream)
-  (let ((*debug-io* stream))
-    (ccl:print-call-history :detailed-p nil)))
-
-#+allegro
-(defun print-backtrace-to-stream (stream)
-  (with-standard-io-syntax
-    (let ((*print-readably* nil)
-	  (*print-miser-width* 40)
-	  (*print-pretty* t)
-	  (tpl:*zoom-print-circle* t)
-	  (tpl:*zoom-print-level* nil)
-	  (tpl:*zoom-print-length* nil))
-      (cl:ignore-errors
-       (let ((*terminal-io* stream)
-	     (*standard-output* stream))
-	 (tpl:do-command "zoom"
-	   :from-read-eval-print-loop nil
-	   :count t
-	   :all t))))))
-
-#+lispworks
-(defun print-backtrace-to-stream (stream)
-  (let ((dbg::*debugger-stack*
-	 (dbg::grab-stack nil :how-many most-positive-fixnum))
-	(*debug-io* stream)
-	(dbg:*debug-print-level* nil)
-	(dbg:*debug-print-length* nil))
-    (dbg:bug-backtrace nil)))
-
-#+sbcl
-;; determine how we're going to access the backtrace in the next
-;; function
+(defparameter *date-time-format* "%Y-%m-%d-%H:%M")
+  
+;; modified from metatilities-base
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (when (find-symbol "*DEBUG-PRINT-VARIABLE-ALIST*" :sb-debug)
-    (pushnew :hunchentoot-sbcl-debug-print-variable-alist *features*)))
+  (defmacro generate-time-part-function (part-name position)
+    (let ((function-name 
+	   (intern 
+	    (concatenate 'string
+			 (symbol-name 'time) "-" (symbol-name part-name))
+	    :trivial-backtrace)))
+      `(eval-when (:compile-toplevel :load-toplevel :execute)
+         (export ',function-name)
+         (defun ,function-name
+                (&optional (universal-time (get-universal-time))
+                           (time-zone nil))
+           ,(format nil "Returns the ~(~A~) part of the given time." part-name)
+           (nth-value ,position 
+		      (apply #'decode-universal-time
+			     universal-time time-zone))))))
 
-#+sbcl
-(defun print-backtrace-to-stream (stream)
-  (let (#+:hunchentoot-sbcl-debug-print-variable-alist
-	(sb-debug:*debug-print-variable-alist*
-	 (list* '(*print-level* . nil)
-		'(*print-length* . nil)
-		sb-debug:*debug-print-variable-alist*))
-	#-:hunchentoot-sbcl-debug-print-variable-alist
-	(sb-debug:*debug-print-level* nil)
-	#-:hunchentoot-sbcl-debug-print-variable-alist
-	(sb-debug:*debug-print-length* nil))
-    (sb-debug:backtrace most-positive-fixnum stream)))
+  (generate-time-part-function second 0)
+  (generate-time-part-function minute 1)
+  (generate-time-part-function hour 2)
+  (generate-time-part-function date 3)
+  (generate-time-part-function month 4)
+  (generate-time-part-function year 5)
+  (generate-time-part-function day-of-week 6)
+  (generate-time-part-function daylight-savings-time-p 7))
 
-#+clisp
-(defun print-backtrace-to-stream (stream)
-  (system::print-backtrace :out stream))
+(defun date-time-string (&key (date/time (get-universal-time))
+			 (format *date-time-format*))
+  (format-date format date/time nil))
 
-#+(or cmucl scl)
-(defun print-backtrace-to-stream (stream)
-  (let ((debug:*debug-print-level* nil)
-	(debug:*debug-print-length* nil))
-    (debug:backtrace most-positive-fixnum stream)))
+(defun format-date (format date &optional stream time-zone)
+  "Formats universal dates using the same format specifiers as NSDateFormatter. The format is:
+
+%% - A '%' character
+%d - Day of the month as a decimal number [01-31]
+%e - Same as %d but does not print the leading 0 for days 1 through 9 
+     [unlike strftime[], does not print a leading space]
+%H - Hour based on a 24-hour clock as a decimal number [00-23]
+%I - Hour based on a 12-hour clock as a decimal number [01-12]
+%m - Month as a decimal number [01-12]
+%M - Minute as a decimal number [00-59]
+%S - Second as a decimal number [00-59]
+%w - Weekday as a decimal number [0-6], where Sunday is 0
+%y - Year without century [00-99]
+%Y - Year with century [such as 1990]
+"
+  (declare (ignore time-zone))
+  (let ((format-length (length format)))
+    (format 
+     stream "~{~A~}"
+     (loop for index = 0 then (1+ index) 
+	while (< index format-length) collect 
+	(let ((char (aref format index)))
+	  (cond 
+	    ((char= #\% char)
+	     (setf char (aref format (incf index)))
+	     (cond 
+	       ;; %% - A '%' character
+	       ((char= char #\%) #\%)
+                            
+	       ;; %d - Day of the month as a decimal number [01-31]
+	       ((char= char #\d) (format nil "~2,'0D" (time-date date)))
+                            
+	       ;; %e - Same as %d but does not print the leading 0 for 
+	       ;; days 1 through 9. Unlike strftime, does not print a 
+	       ;; leading space
+	       ((char= char #\e) (format nil "~D" (time-date date)))
+                            
+	       ;; %H - Hour based on a 24-hour clock as a decimal number [00-23]
+	       ((char= char #\H) (format nil "~2,'0D" (time-hour date)))
+                            
+	       ;; %I - Hour based on a 12-hour clock as a decimal number [01-12]
+	       ((char= char #\I) (format nil "~2,'0D" 
+					 (1+ (mod (time-hour date) 12))))
+                            
+	       ;; %m - Month as a decimal number [01-12]
+	       ((char= char #\m) (format nil "~2,'0D" (time-month date)))
+                            
+	       ;; %M - Minute as a decimal number [00-59]
+	       ((char= char #\M) (format nil "~2,'0D" (time-minute date)))
+                            
+	       ;; %S - Second as a decimal number [00-59]
+	       ((char= char #\S) (format nil "~2,'0D" (time-second date)))
+                            
+	       ;; %w - Weekday as a decimal number [0-6], where Sunday is 0
+	       ((char= char #\w) (format nil "~D" (time-day-of-week date)))
+                            
+	       ;; %y - Year without century [00-99]
+	       ((char= char #\y) 
+		(let ((year-string (format nil "~,2A" (time-year date))))
+		  (subseq year-string (- (length year-string) 2))))
+                            
+	       ;; %Y - Year with century [such as 1990]
+	       ((char= char #\Y) (format nil "~D" (time-year date)))
+                            
+	       (t
+		(error "Ouch - unknown formatter '%~c" char))))
+	    (t char)))))))
 
