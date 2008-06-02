@@ -1,15 +1,7 @@
 (in-package #:trivial-backtrace)
 
-(setf (documentation 'print-backtrace-to-stream 'function)
-  "Send a backtrace of the current error to stream. 
-
-Stream is assumed to be an open writable file stream or a
-string-output-stream. Note that `print-backtrace-to-stream`
-will print a backtrace for whatever the Lisp deems to be the 
-*current* error.
-")
-
 (defun print-condition (condition stream)
+  "Print `condition` to `stream` using the pretty printer."
   (format
    stream
    "~@<An unhandled error condition has been signalled:~3I ~a~I~:@>~%~%"
@@ -120,4 +112,14 @@ string. Otherwise, returns nil.
 	(debug:*debug-print-length* nil))
     (debug:backtrace most-positive-fixnum stream)))
 
+
+;; must be after the defun above or the docstring may be wiped out
+(setf (documentation 'print-backtrace-to-stream 'function)
+  "Send a backtrace of the current error to stream. 
+
+Stream is assumed to be an open writable file stream or a
+string-output-stream. Note that `print-backtrace-to-stream`
+will print a backtrace for whatever the Lisp deems to be the 
+*current* error.
+")
 

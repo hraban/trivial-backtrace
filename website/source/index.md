@@ -32,10 +32,10 @@ backtrace portably. As of {today}, it supports Allegro Common
 Lisp, LispWorkds, ECL, MCL, SCL, SBCL and CMUCL. Its
 interface consists of three functions and one variable:
 
-    * print-backtrace
-	* print-backtrace-to-stream
-	* print-condition
-	* \*date-time-format\*
+ * print-backtrace
+ * print-backtrace-to-stream
+ * print-condition
+ * \*date-time-format\*
 
 You can probably already guess what they do, but they are
 described in more detail below.
@@ -65,8 +65,8 @@ listed below:
 
     darcs get http://common-lisp.net/project/trivial-backtrace/
 
-trivial-backtrace is also [ASDF installable][]. Its CLiki
-home is right [where][cliki-home] you'd expect.
+trivial-backtrace is also [ASDF installable][asdf-install].
+Its CLiki home is right [where][cliki-home] you'd expect.
 
 There's also a handy [gzipped tar file][tarball].
 

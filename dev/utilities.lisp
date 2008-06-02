@@ -1,7 +1,24 @@
 (in-package #:trivial-backtrace)
 
-(defparameter *date-time-format* "%Y-%m-%d-%H:%M")
-  
+(defparameter *date-time-format* "%Y-%m-%d-%H:%M"
+  "The default format to use when printing dates and times.
+
+* %% - A '%' character
+* %d - Day of the month as a decimal number [01-31]
+* %e - Same as %d but does not print the leading 0 for days 1 through 9 
+     [unlike strftime[], does not print a leading space]
+* %H - Hour based on a 24-hour clock as a decimal number [00-23]
+*%I - Hour based on a 12-hour clock as a decimal number [01-12]
+* %m - Month as a decimal number [01-12]
+* %M - Minute as a decimal number [00-59]
+* %S - Second as a decimal number [00-59]
+* %w - Weekday as a decimal number [0-6], where Sunday is 0
+* %y - Year without century [00-99]
+* %Y - Year with century [such as 1990]
+
+This code is borrowed from the `format-date` function in 
+[metatilities-base][].")
+
 ;; modified from metatilities-base
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defmacro generate-time-part-function (part-name position)
@@ -34,21 +51,6 @@
   (format-date format date/time nil))
 
 (defun format-date (format date &optional stream time-zone)
-  "Formats universal dates using the same format specifiers as NSDateFormatter. The format is:
-
-%% - A '%' character
-%d - Day of the month as a decimal number [01-31]
-%e - Same as %d but does not print the leading 0 for days 1 through 9 
-     [unlike strftime[], does not print a leading space]
-%H - Hour based on a 24-hour clock as a decimal number [00-23]
-%I - Hour based on a 12-hour clock as a decimal number [01-12]
-%m - Month as a decimal number [01-12]
-%M - Minute as a decimal number [00-59]
-%S - Second as a decimal number [00-59]
-%w - Weekday as a decimal number [0-6], where Sunday is 0
-%y - Year without century [00-99]
-%Y - Year with century [such as 1990]
-"
   (declare (ignore time-zone))
   (let ((format-length (length format)))
     (format 
@@ -101,4 +103,3 @@
 	       (t
 		(error "Ouch - unknown formatter '%~c" char))))
 	    (t char)))))))
-
