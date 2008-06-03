@@ -16,7 +16,7 @@
 		:pathname "test/"
 		:depends-on ("setup")
 		:components ((:file "tests"))))  
-  :depends-on (:lift))
+  :depends-on (:lift :trivial-backtrace))
 
 
 
