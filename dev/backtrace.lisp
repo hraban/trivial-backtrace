@@ -7,7 +7,8 @@
    "~@<An unhandled error condition has been signalled:~3I ~a~I~:@>~%~%"
    condition))
   
-(defun print-backtrace (error &key (output nil) (if-exists :append)
+(defun print-backtrace (error &key (output *debug-io*)
+			(if-exists :append)
 			(verbose nil))
   "Send a backtrace for the error `error` to `output`. 
 
@@ -40,8 +41,8 @@ string. Otherwise, returns nil.
 	(stream (values output nil)))
     (unwind-protect
 	 (progn
-	   (print-condition error stream)
 	   (format stream "~&Date/time: ~a" (date-time-string))
+	   (print-condition error stream)
 	   (terpri stream)
 	   (print-backtrace-to-stream stream)
 	   (terpri stream)
@@ -87,18 +88,18 @@ string. Otherwise, returns nil.
 ;; function
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (when (find-symbol "*DEBUG-PRINT-VARIABLE-ALIST*" :sb-debug)
-    (pushnew :hunchentoot-sbcl-debug-print-variable-alist *features*)))
+    (pushnew :sbcl-debug-print-variable-alist *features*)))
 
 #+sbcl
 (defun print-backtrace-to-stream (stream)
-  (let (#+:hunchentoot-sbcl-debug-print-variable-alist
+  (let (#+:sbcl-debug-print-variable-alist
 	(sb-debug:*debug-print-variable-alist*
 	 (list* '(*print-level* . nil)
 		'(*print-length* . nil)
 		sb-debug:*debug-print-variable-alist*))
-	#-:hunchentoot-sbcl-debug-print-variable-alist
+	#-:sbcl-debug-print-variable-alist
 	(sb-debug:*debug-print-level* nil)
-	#-:hunchentoot-sbcl-debug-print-variable-alist
+	#-:sbcl-debug-print-variable-alist
 	(sb-debug:*debug-print-length* nil))
     (sb-debug:backtrace most-positive-fixnum stream)))
 
@@ -123,3 +124,7 @@ will print a backtrace for whatever the Lisp deems to be the
 *current* error.
 ")
 
+(eval-when (:compile-toplevel :load-toplevel :evaluate)
+  (unless (fboundp 'print-backtrace-to-stream)
+    (defun print-backtrace-to-stream (stream)
+      (format stream "~&backtrace output unavailable.~%"))))
