@@ -1,7 +1,7 @@
 {include shared-links.md}
 
 {set-property html yes}
-{set-property style-sheet "http://common-lisp.net/project/cl-containers/shared/style.css"}
+{set-property style-sheet "http://common-lisp.net/project/cl-containers/shared/style-200.css"}
 {set-property author "Gary Warren King"}
 {set-property title "trivial-backtrace | watch where you've been"}
 
