@@ -52,7 +52,7 @@ string. Otherwise, returns nil.
 	 (when close?
 	   (close stream)))))
 
-#+mcl
+#+(or mcl ccl)
 (defun print-backtrace-to-stream (stream)
   (let ((*debug-io* stream))
     (ccl:print-call-history :detailed-p nil)))
