@@ -124,7 +124,7 @@ will print a backtrace for whatever the Lisp deems to be the
 *current* error.
 ")
 
-(eval-when (:compile-toplevel :load-toplevel :evaluate)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (unless (fboundp 'print-backtrace-to-stream)
     (defun print-backtrace-to-stream (stream)
       (format stream "~&backtrace output unavailable.~%"))))
