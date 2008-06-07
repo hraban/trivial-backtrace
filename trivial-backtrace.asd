@@ -4,7 +4,7 @@
 (in-package #:trivial-backtrace-system)
 
 (defsystem trivial-backtrace
-  :version "1.0.1"
+  :version "1.0.2"
   :author "Gary Warren King <gwking@metabang.com>"
   :maintainer "Gary Warren King <gwking@metabang.com>"
   :licence "MIT Style license "
