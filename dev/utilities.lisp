@@ -28,7 +28,6 @@ This code is borrowed from the `format-date` function in
 			 (symbol-name 'time) "-" (symbol-name part-name))
 	    :trivial-backtrace)))
       `(eval-when (:compile-toplevel :load-toplevel :execute)
-         (export ',function-name)
          (defun ,function-name
                 (&optional (universal-time (get-universal-time))
                            (time-zone nil))
