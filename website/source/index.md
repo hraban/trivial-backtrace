@@ -3,20 +3,13 @@
 <div class="contents">
 <div class="system-links">
 
-  * [Mailing Lists][3]
-  * [Getting it][4]
-  * [Documentation][5]
-  * [News][6]
+  * [Mailing Lists][mailing-list]
+  * [Getting it][downloads]
+  * [Documentation][]
+  * [News][]
   * [Test results][tr]
-  * [Changelog][7]
+  * [Changelog][]
 
-   [3]: #mailing-lists
-   [4]: #downloads
-   [5]: documentation/ "documentation link"
-   [6]: #news
-   [7]: changelog.html
-   [tr]: test-report.html
-   
 </div>
 <div class="system-description">
 
