@@ -5,5 +5,9 @@
   (:export #:print-backtrace
 	   #:print-backtrace-to-stream
 	   #:print-condition
-	   #:*date-time-format*))
+	   #:*date-time-format*
+
+
+	   #:backtrace-string
+	   #:map-backtrace))
 

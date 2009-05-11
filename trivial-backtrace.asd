@@ -20,7 +20,9 @@
     "dev"
     :depends-on ("setup")
     :components ((:file "utilities")
-		 (:file "backtrace"))))
+		 (:file "backtrace")
+		 (:file "map-backtrace")
+		 (:file "fallback" :depends-on ("backtrace" "map-backtrace")))))
   :in-order-to ((test-op (load-op trivial-backtrace-test)))
   :perform (test-op :after (op c)
 		    (funcall
