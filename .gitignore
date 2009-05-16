@@ -4,8 +4,10 @@ common-lisp.net
 .vcs
 GNUmakefile
 init-lisp.lisp
+website/changelog.xml
 
-log5.tar.gz
+
+trivial-backtrace.tar.gz
 website/output/
 test-results/
 lift-local.config
