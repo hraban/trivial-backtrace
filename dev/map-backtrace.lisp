@@ -99,5 +99,9 @@
 								      :value (sb-di:debug-var-value v f)))))
 						(ignore-errors (sb-di::debug-fun-debug-vars (sb-di:frame-debug-fun f)))))))))
 
+#-(or ccl sbcl)
+(defun impl-map-backtrace (func)
+  (funcall func (format nil "unable to map backtrace for ~a"
+			(lisp-implementation-type))))
 
 
