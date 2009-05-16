@@ -4,9 +4,9 @@
 (in-package #:trivial-backtrace-system)
 
 (defsystem trivial-backtrace
-  :version "1.0.2"
-  :author "Gary Warren King <gwking@metabang.com>"
-  :maintainer "Gary Warren King <gwking@metabang.com>"
+  :version "1.1.0"
+  :author "Gary Warren King <gwking@metabang.com> and contributors"
+  :maintainer "Gary Warren King <gwking@metabang.com> and contributors"
   :licence "MIT Style license "
   :description "trivial-backtrace"
   :depends-on ()
