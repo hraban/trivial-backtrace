@@ -9,6 +9,7 @@
     (handler-case 
 	(let ((x 1))
 	  (let ((y (- x (expt 1024 0))))
+	    (declare (optimize (safety 3)))
 	    (/ 2 y)))
       (error (c)
 	(setf output (print-backtrace c :output nil))))

@@ -101,7 +101,5 @@
 
 #-(or ccl sbcl)
 (defun impl-map-backtrace (func)
-  (funcall func (format nil "unable to map backtrace for ~a"
-			(lisp-implementation-type))))
-
-
+  (declare (ignore func))
+  (warn "unable to map backtrace for ~a" (lisp-implementation-type)))
