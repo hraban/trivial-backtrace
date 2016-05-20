@@ -101,7 +101,7 @@ string. Otherwise, returns nil.
 	(sb-debug:*debug-print-level* nil)
 	#-:sbcl-debug-print-variable-alist
 	(sb-debug:*debug-print-length* nil))
-    (sb-debug:backtrace most-positive-fixnum stream)))
+    (sb-debug:print-backtrace :count most-positive-fixnum :stream stream)))
 
 #+clisp
 (defun print-backtrace-to-stream (stream)
