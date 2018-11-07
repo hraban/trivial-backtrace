@@ -47,9 +47,9 @@
   (impl-map-backtrace function))
 
 (defun print-map-backtrace (&optional (stream *debug-io*) &rest args)
-  (apply 'map-backtrace 
+  (apply 'map-backtrace
 	 (lambda (frame)
-	   (print-frame frame stream)) args))
+	   (print-frame frame stream))))
 
 (defun backtrace-string (&rest args)
   (with-output-to-string (stream)
