@@ -41,7 +41,7 @@ string. Otherwise, returns nil.
 	(stream (values output nil)))
     (unwind-protect
 	 (progn
-	   (format stream "~&Date/time: ~a" (date-time-string))
+	   (format stream "~&Date/time: ~a!~%" (date-time-string))
 	   (print-condition error stream)
 	   (terpri stream)
 	   (print-backtrace-to-stream stream)
