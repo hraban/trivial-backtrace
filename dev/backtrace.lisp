@@ -46,7 +46,7 @@ string. Otherwise, returns nil.
 	   (terpri stream)
 	   (print-backtrace-to-stream stream)
 	   (terpri stream)
-	   (when (typep stream 'string-stream)
+	   (when (null output)
 	     (get-output-stream-string stream)))
 	 ;; cleanup
 	 (when close?
