@@ -113,6 +113,9 @@ string. Otherwise, returns nil.
 	(debug:*debug-print-length* nil))
     (debug:backtrace most-positive-fixnum stream)))
 
+#+clasp
+(defun print-backtrace-to-stream (stream)
+  (core:btcl :stream stream))
 
 ;; must be after the defun above or the docstring may be wiped out
 (setf (documentation 'print-backtrace-to-stream 'function)
