@@ -99,7 +99,28 @@
 								      :value (sb-di:debug-var-value v f)))))
 						(ignore-errors (sb-di::debug-fun-debug-vars (sb-di:frame-debug-fun f)))))))))
 
-#-(or ccl sbcl)
+#+clasp
+(defun impl-map-backtrace (func)
+  (core:call-with-backtrace
+   #'(lambda(raw-backtrace)
+       (dolist (clasp-frame (core:common-lisp-backtrace-frames raw-backtrace))
+         (let* ((address (core::backtrace-frame-return-address clasp-frame))
+                (code-source-location-or-nil nil #+(or) (ext:code-source-position address)))
+         (funcall func
+                  (make-frame :func (core::backtrace-frame-print-name clasp-frame)
+                              :source-filename (if code-source-location-or-nil
+                                                   (namestring (ext::code-source-line-source-pathname code-source-location-or-nil))
+                                                   nil)
+                              :source-pos  (if code-source-location-or-nil
+                                               (ext::code-source-line-line-number code-source-location-or-nil)
+                                               nil)
+                              :vars (let ((index -1))
+                                      (mapcar #'(lambda(var)
+                                                  (incf index)
+                                              (make-var :name (format nil "Arg(~a)" index) :value var))
+                                            (coerce (core::backtrace-frame-arguments clasp-frame) 'list))))))))))
+
+#-(or ccl sbcl clasp)
 (defun impl-map-backtrace (func)
   (declare (ignore func))
   (warn "unable to map backtrace for ~a" (lisp-implementation-type)))
