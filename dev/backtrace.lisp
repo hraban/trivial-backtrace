@@ -41,12 +41,12 @@ string. Otherwise, returns nil.
 	(stream (values output nil)))
     (unwind-protect
 	 (progn
-	   (format stream "~&Date/time: ~a" (date-time-string))
+	   (format stream "~&Date/time: ~a!~%" (date-time-string))
 	   (print-condition error stream)
 	   (terpri stream)
 	   (print-backtrace-to-stream stream)
 	   (terpri stream)
-	   (when (typep stream 'string-stream)
+	   (when (null output)
 	     (get-output-stream-string stream)))
 	 ;; cleanup
 	 (when close?
