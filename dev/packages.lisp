@@ -1,3 +1,4 @@
+;;;; -*- Mode: LISP; Syntax: Ansi-Common-Lisp; Package: CL-USER; Base: 10; -*-
 (in-package #:common-lisp-user)
 
 (defpackage #:trivial-backtrace
