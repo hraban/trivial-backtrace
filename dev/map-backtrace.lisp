@@ -58,7 +58,8 @@
 
 #+ccl
 (defun impl-map-backtrace (func)
-  (ccl::map-call-frames (lambda (ptr) 
+  (ccl::map-call-frames (lambda (ptr ctx)
+			  (declare (ignore ctx))
 			  (multiple-value-bind (lfun pc)
 			      (ccl::cfp-lfun ptr)
 			    (let ((source-note (ccl:function-source-note lfun)))
