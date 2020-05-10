@@ -115,7 +115,7 @@ string. Otherwise, returns nil.
 
 #+clasp
 (defun print-backtrace-to-stream (stream)
-  (core:btcl :stream stream))
+  (CLASP-DEBUG:PRINT-BACKTRACE :stream stream))
 
 ;; must be after the defun above or the docstring may be wiped out
 (setf (documentation 'print-backtrace-to-stream 'function)
