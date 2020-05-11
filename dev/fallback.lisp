@@ -1,3 +1,4 @@
+;;;; -*- Mode: LISP; Syntax: Ansi-Common-Lisp; Package: TRIVIAL-BACKTRACE; Base: 10; -*-
 (in-package #:trivial-backtrace)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
