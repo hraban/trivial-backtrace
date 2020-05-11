@@ -16,8 +16,8 @@
     (ensure (stringp output))
     (ensure (plusp (length output)))))
 
-(addtest (generates-backtrace-to-string-stream)
-  test-2
+(addtest (generates-backtrace)
+  generates-backtrace-to-string-stream
   (let ((output nil))
     (handler-case 
 	(let ((x 1))
