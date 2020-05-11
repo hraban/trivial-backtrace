@@ -58,7 +58,7 @@
 
 #+ccl
 (defun impl-map-backtrace (func)
-  (ccl::map-call-frames (lambda (ptr) 
+  (ccl::map-call-frames (lambda (ptr &optional context) 
 			  (multiple-value-bind (lfun pc)
 			      (ccl::cfp-lfun ptr)
 			    (let ((source-note (ccl:function-source-note lfun)))
@@ -101,24 +101,22 @@
 
 #+clasp
 (defun impl-map-backtrace (func)
-  (core:call-with-backtrace
-   #'(lambda(raw-backtrace)
-       (dolist (clasp-frame (core:common-lisp-backtrace-frames raw-backtrace))
-         (let* ((address (core::backtrace-frame-return-address clasp-frame))
-                (code-source-location-or-nil nil #+(or) (ext:code-source-position address)))
-         (funcall func
-                  (make-frame :func (core::backtrace-frame-print-name clasp-frame)
-                              :source-filename (if code-source-location-or-nil
-                                                   (namestring (ext::code-source-line-source-pathname code-source-location-or-nil))
-                                                   nil)
-                              :source-pos  (if code-source-location-or-nil
-                                               (ext::code-source-line-line-number code-source-location-or-nil)
-                                               nil)
-                              :vars (let ((index -1))
-                                      (mapcar #'(lambda(var)
-                                                  (incf index)
-                                              (make-var :name (format nil "Arg(~a)" index) :value var))
-                                            (coerce (core::backtrace-frame-arguments clasp-frame) 'list))))))))))
+  (clasp-debug:with-stack (stack)
+      (clasp-debug:map-stack
+       #'(lambda(current-frame)
+           (funcall func
+                    (let ((source (clasp-debug:frame-source-position current-frame)))
+                      (make-frame :func (clasp-debug:frame-function current-frame)
+                                  :source-filename (if source (clasp-debug:code-source-line-pathname source) nil)
+                                  :source-pos (if source (clasp-debug:code-source-line-line-number source) nil)
+                                  :vars (let ((index 0))
+                                           (mapcar #'(lambda(argument)
+                                                       (prog1
+                                                           (make-var :name (format nil "Arg-~a" index) :value argument)
+                                                         (incf index)))
+                                                   (clasp-debug:frame-arguments current-frame)))))))
+       
+       stack)))
 
 #-(or ccl sbcl clasp)
 (defun impl-map-backtrace (func)
