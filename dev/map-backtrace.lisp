@@ -73,7 +73,10 @@
 
 #+sbcl
 (defun impl-map-backtrace (func)
-  (loop for f = (or sb-debug:*stack-top-hint* (sb-di:top-frame)) then (sb-di:frame-down f)
+  (loop for f = (or (and (typep sb-debug:*stack-top-hint* 'sb-di:frame)
+                         sb-debug:*stack-top-hint*)
+                    (sb-di:top-frame))
+          then (sb-di:frame-down f)
 	while f
 	do (funcall func 
 		    (make-frame :func 
