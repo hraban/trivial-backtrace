@@ -10,7 +10,7 @@
   :maintainer "Gary Warren King <gwking@metabang.com> and contributors"
   :licence "MIT Style license "
   :description "trivial-backtrace"
-  :depends-on ()
+  :depends-on ((:feature :abcl (:require #:abcl-introspect)))
   :components
   ((:static-file "COPYING")
    (:module 

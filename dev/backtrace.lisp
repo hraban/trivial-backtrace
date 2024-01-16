@@ -118,6 +118,29 @@ string. Otherwise, returns nil.
 (defun print-backtrace-to-stream (stream)
   (clasp-debug:print-backtrace :stream stream))
 
+#+(or ecl mkcl)
+(defun print-backtrace-to-stream (stream)
+  (loop for ihs from (1- (si:ihs-top)) above 0
+        do (fresh-line stream)
+           (prin1 ihs stream)
+           (write-string ": " stream)
+           (prin1 (list (si::ihs-fun ihs) (si::ihs-env ihs)) stream)
+           (terpri stream)))
+
+#+abcl
+(defun print-backtrace-to-stream (stream)
+  (loop for i from 0
+        for frame in (sys::backtrace)
+        do (fresh-line stream)
+           (prin1 i stream)
+           (write-string ": " stream)
+           (prin1 frame stream)
+           (terpri stream)))
+
+#+mezzano
+(defun print-backtrace-to-stream (stream)
+  (mezzano.internals::backtrace :stream stream))
+
 ;; must be after the defun above or the docstring may be wiped out
 (setf (documentation 'print-backtrace-to-stream 'function)
   "Send a backtrace of the current error to stream. 
